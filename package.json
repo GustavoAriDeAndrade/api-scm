@@ -1,0 +1,11 @@
+{
+  "name": "api-scm",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "build": "node ace build --production",
+    "start": "node server.js",
+    "test": "node ace test"
+  }
+}
