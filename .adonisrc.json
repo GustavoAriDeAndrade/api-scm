@@ -1,7 +1,10 @@
 {
   "typescript": true,
   "commands": [
-    "./commands"
+    "./commands",
+    "@adonisjs/core/commands",
+    "@adonisjs/repl/build/commands",
+    "@adonisjs/lucid/build/commands"
   ],
   "exceptionHandlerNamespace": "App/Exceptions/Handler",
   "aliases": {
@@ -15,6 +18,20 @@
     "./start/kernel"
   ],
   "providers": [
-    "./providers/AppProvider"
+    "./providers/AppProvider",
+    "@adonisjs/core",
+    "@adonisjs/lucid",
+    "@adonisjs/auth",
+    "@adonisjs/view",
+    "@adonisjs/ally"
+  ],
+  "aceProviders": [
+    "@adonisjs/repl"
+  ],
+  "metaFiles": [
+    {
+      "pattern": "resources/views/**/*.edge",
+      "reloadServer": false
+    }
   ]
 }
