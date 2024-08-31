@@ -1,0 +1,66 @@
+# utiliza a imagem do python
+image: node:14.17
+# define os pipelines
+pipelines:
+  # define qual branch deve rodar 
+  branches:
+    # executa o script apenas no master
+    master:
+      # executa o build
+      - step:
+          # nome do passo
+          name: (PRD) Construindo e publicando imagem
+          # serviços adicionais
+          services:
+            - docker
+          # cache
+          caches:
+            - pip
+          # scripts que são executados
+          script:
+            # define a variável da tag
+            - TAG="master"-"$BITBUCKET_COMMIT"-"$BITBUCKET_BUILD_NUMBER"
+            # builda a aplicação
+            - npm install
+            - npm run build
+            - cd build && npm i --production && cd ..
+            # builda a imagem do
+            - docker build -t $DOCKER_IMAGE .
+            # Envia a imagem para
+            - pipe: atlassian/aws-ecr-push-image:1.3.0
+              # define as variáveis
+              variables:
+                # define o nome da imagem
+                IMAGE_NAME: $DOCKER_IMAGE
+                # define a tag da imagem
+                TAGS: $TAG
+    # executa o script apenas no master
+    develop:
+      # executa o build
+      - step:
+          # nome do passo
+          name: (QA) Construindo e publicando imagem
+          # serviços adicionais
+          services:
+            - docker
+          # cache
+          caches:
+            - pip
+          # scripts que são executados
+          script:
+            # define a variável da tag
+            - TAG="master-$BITBUCKET_COMMIT"
+            # builda a aplicação
+            - npm install
+            - npm run build
+            - cd build && npm i --production && cd ..
+            # builda a imagem do
+            - docker build -t $DOCKER_IMAGE .
+            # Envia a imagem para
+            - pipe: atlassian/aws-ecr-push-image:1.3.0
+              # define as variáveis
+              variables:
+                # define o nome da imagem
+                IMAGE_NAME: $DOCKER_IMAGE
+                # define a tag da imagem
+                TAGS: $TAG
