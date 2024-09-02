@@ -37,6 +37,26 @@ Route.group(() => {
 	}).prefix('user')
 
 	/**
+   * Clients
+   */
+	Route.group(() => {
+		Route.post('', 'ClientsController.create').middleware([ 'group:admin,caixa'])
+		Route.get('', 'ClientsController.read').middleware([ 'group:admin,caixa' ])
+		Route.get(':id', 'ClientsController.find').middleware([ 'group:admin,caixa' ])
+		Route.put(':id', 'ClientsController.update').middleware([ 'group:admin,caixa' ])
+	}).prefix('client')
+
+	/**
+   * Products
+   */
+	Route.group(() => {
+		Route.post('', 'ProductsController.create').middleware([ 'group:admin,caixa'])
+		Route.get('', 'ProductsController.read').middleware([ 'group:admin,caixa' ])
+		Route.get(':id', 'ProductsController.find').middleware([ 'group:admin,caixa' ])
+		Route.put(':id', 'ProductsController.update').middleware([ 'group:admin,caixa' ])
+	}).prefix('product')
+
+	/**
 	 * Groups
 	 */
 	Route.get('group', 'UsersController.readGroups').middleware([ 'group:admin,caixa' ])
