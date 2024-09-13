@@ -156,4 +156,17 @@ export default class ProductsController {
 		return response.status(200).send({ product })
 
 	}
+
+	/**
+	 * Busca os produtos cadastrados para listar no select
+	 * @param param0 
+	 * @returns 
+	 */
+	public async select({ response } : HttpContextContract){
+
+		const products = await Product.query().select('id', 'nome').where('ativo', true).orderBy('nome')
+
+		return response.status(200).send({ products })
+
+	}
 }
