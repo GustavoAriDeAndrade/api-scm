@@ -26,9 +26,9 @@ Route.post('users', 'UsersController.create')
 
 Route.group(() => {
 
-  /**
-   * Users
-   */
+	/**
+	 * Users
+	 */
 	Route.group(() => {
 		Route.post('', 'UsersController.create').middleware([ 'group:admin'])
 		Route.get('', 'UsersController.read').middleware([ 'group:admin' ])
@@ -37,18 +37,19 @@ Route.group(() => {
 	}).prefix('user')
 
 	/**
-   * Clients
-   */
+	 * Clients
+	 */
 	Route.group(() => {
 		Route.post('', 'ClientsController.create').middleware([ 'group:admin,caixa'])
 		Route.get('', 'ClientsController.read').middleware([ 'group:admin,caixa' ])
 		Route.get(':id', 'ClientsController.find').middleware([ 'group:admin,caixa' ])
 		Route.put(':id', 'ClientsController.update').middleware([ 'group:admin,caixa' ])
+		Route.get('select', 'ClientsController.select').middleware([ 'group:admin,caixa' ])
 	}).prefix('client')
 
 	/**
-   * Products
-   */
+   	 * Products
+   	 */
 	Route.group(() => {
 		Route.post('', 'ProductsController.create').middleware([ 'group:admin,caixa'])
 		Route.get('', 'ProductsController.read').middleware([ 'group:admin,caixa' ])
@@ -57,10 +58,24 @@ Route.group(() => {
 	}).prefix('product')
 
 	/**
+   	 * Sales
+   	 */
+	Route.group(() => {
+		Route.post('', 'SalesController.create').middleware([ 'group:admin,caixa'])
+	}).prefix('sale')
+
+	/**
 	 * Groups
 	 */
 	Route.get('group', 'UsersController.readGroups').middleware([ 'group:admin,caixa' ])
 	Route.get('getGroups', 'UsersController.getGroups').middleware([ 'group:admin,caixa' ])
+
+	/**
+	 * Selects
+	 */
+	Route.get('selectCliente', 'ClientsController.select').middleware([ 'group:admin,caixa' ])
+	Route.get('selectProduto', 'ProductsController.select').middleware([ 'group:admin,caixa' ])
+	Route.get('selectFormaPagamento', 'SalesController.select').middleware([ 'group:admin,caixa' ])
   
 }).prefix('api').middleware(['auth','context'])
 

@@ -33,7 +33,12 @@ export default class ClientsController {
 
 			await trx.commit()
 
-			return response.created({ message: 'Cliente criado com sucesso.', client })
+			const cliente = {
+				id: client.id,
+				nome: client.nome
+			}
+
+			return response.created({ message: 'Cliente criado com sucesso.', cliente })
 
 		}catch(e){
 
@@ -154,6 +159,19 @@ export default class ClientsController {
 		}
 
 		return response.status(200).send({ client })
+
+	}
+
+	/**
+	 * Busca os clientes cadastrados para listar no select
+	 * @param param0 
+	 * @returns 
+	 */
+	public async select({ response } : HttpContextContract){
+
+		const clients = await Client.query().select('id', 'nome').orderBy('nome')
+
+		return response.status(200).send({ clients })
 
 	}
 }
