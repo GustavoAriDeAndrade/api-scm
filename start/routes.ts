@@ -68,6 +68,13 @@ Route.group(() => {
 	}).prefix('sale')
 
 	/**
+	 * Reports
+	 */
+	Route.group(() => {
+		Route.get('', 'ReportsController.get').middleware([ 'group:admin' ])
+	}).prefix('report')
+
+	/**
 	 * Groups
 	 */
 	Route.get('group', 'UsersController.readGroups').middleware([ 'group:admin,caixa' ])
