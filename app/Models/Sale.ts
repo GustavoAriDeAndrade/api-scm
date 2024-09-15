@@ -3,6 +3,7 @@ import { BaseModel, belongsTo, BelongsTo, column, hasMany, HasMany } from '@ioc:
 import User from './User'
 import Client from './Client'
 import SaleProduct from './SaleProduct'
+import SalePayment from './SalePayment'
 
 export default class Sale extends BaseModel {
   @column({ isPrimary: true })
@@ -31,4 +32,7 @@ export default class Sale extends BaseModel {
 
   @hasMany(() => SaleProduct, { foreignKey: 'venda_id' })
   public products: HasMany<typeof SaleProduct>
+
+  @hasMany(() => SalePayment, { foreignKey: 'venda_id' })
+  public payments: HasMany<typeof SalePayment>
 }

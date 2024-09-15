@@ -58,6 +58,124 @@ export default class SalesController {
 		}
     }
 
+	/**
+	 * Realiza a listagem das vendas feitas
+	 * @param param0 
+	 * @returns 
+	 */
+	public async read({ request, response } : HttpContextContract){
+
+		const { page, limit, orderBy, order, search, _embed } = request.all()
+
+		let query = Sale.query()
+
+		if(query != null){
+
+			if(search){
+
+				query.whereRaw('(nome ilike ? or email ilike ?)', [ `%${search}%`, `%${search}%` ])
+
+			}
+
+			if(orderBy){
+
+				query.orderBy(orderBy, order)
+
+			}
+
+			query.preload('client', (queryClient) => {
+				queryClient.select('id', 'nome')
+			})
+
+            query.preload('payments', (queryPayment) => {
+                queryPayment.select('venda_id', 'paga', 'valor_restante', 'data_vencimento')
+                    .where('paga', false).orderBy('data_vencimento')
+            })
+
+			if(_embed === 'true'){
+
+				const sales = await query
+
+				return response.status(200).send({ sales })
+
+			}
+
+			const sales = await query.paginate(page, limit)
+
+			return response.status(200).send({ sales })
+
+		}
+	}
+
+    /**
+	 * Função para realizar a atualização de uma parcela
+	 * @param param0 
+	 * @returns 
+	 */
+	public async update({ request, response, params } : HttpContextContract){
+
+		const trx = await Database.transaction()
+
+		try{
+
+			const body = request.all()
+
+			const sale = await SalePayment.query().where({'id': params.id, 'venda_id': body.venda_id}).first()
+
+			if(sale){
+
+				sale.useTransaction(trx)
+	
+				sale.merge(body)
+	
+				await sale.save()
+	
+				await trx.commit()
+	
+				return response.ok({ message: 'Parcela atualizada com sucesso.', sale })
+			
+			}else{
+
+				return response.status(204).send({ message: 'Parcela não encontrada' })
+
+			}
+
+		}catch(e){
+
+			console.log(e)
+
+			await trx.rollback()
+
+			return response.internalServerError({ message: e.message })
+
+		}
+	}
+    
+    /**
+	 * Busca uma venda com base no seu id
+	 * @param param0 
+	 * @returns 
+	 */
+	public async find({ params, response } : HttpContextContract){
+
+		const sale = await Sale.query().where('id', params.id).preload('client', (queryClient) => {
+			queryClient.select('id', 'nome')
+		}).preload('user', (queryUser) => {
+			queryUser.select('id', 'nome')
+		}).preload('products', (queryProduct) => {
+			queryProduct.preload('product')
+		}).preload('payments').first()
+
+		if(!sale){
+
+			return response.status(204).send({ message: 'Venda não encontrada'})
+
+		}
+
+		return response.status(200).send({ sale })
+
+	}
+
     /**
      * Busca as formas de pagamento cadastradas para listar no select
      * @param param0 

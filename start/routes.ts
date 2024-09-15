@@ -62,6 +62,9 @@ Route.group(() => {
    	 */
 	Route.group(() => {
 		Route.post('', 'SalesController.create').middleware([ 'group:admin,caixa'])
+		Route.get('', 'SalesController.read').middleware([ 'group:admin,caixa' ])
+		Route.get(':id', 'SalesController.find').middleware([ 'group:admin,caixa' ])
+		Route.put(':id', 'SalesController.update').middleware([ 'group:admin,caixa' ])
 	}).prefix('sale')
 
 	/**
