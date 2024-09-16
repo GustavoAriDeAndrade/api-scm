@@ -67,7 +67,7 @@ export default class ProductsController {
 
 			if(search){
 
-				query.whereRaw('(nome ilike ?)', [ `%${search}%` ])
+				query.whereILike('nome', '%' + search + '%')
 
 			}
 

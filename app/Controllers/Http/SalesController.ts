@@ -71,12 +71,6 @@ export default class SalesController {
 
 		if(query != null){
 
-			if(search){
-
-				query.whereRaw('(nome ilike ? or email ilike ?)', [ `%${search}%`, `%${search}%` ])
-
-			}
-
 			if(orderBy){
 
 				query.orderBy(orderBy, order)
@@ -85,7 +79,11 @@ export default class SalesController {
 
 			query.preload('client', (queryClient) => {
 				queryClient.select('id', 'nome')
-			})
+			}).if(search, (clientQuery) => {
+                clientQuery.whereHas('client', (filter) => {
+                    filter.whereILike('nome', '%' + search + '%')
+                })
+            })
 
             query.preload('payments', (queryPayment) => {
                 queryPayment.select('venda_id', 'paga', 'valor_restante', 'data_vencimento')
