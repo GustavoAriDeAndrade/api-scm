@@ -23,6 +23,9 @@ export default class Client extends BaseModel {
   @column()
   public numero: number
 
+  @column()
+  public ativo: boolean
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

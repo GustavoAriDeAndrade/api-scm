@@ -21,7 +21,7 @@ export default class ClientsController {
 
 		try{
 
-			const body = request.only([ 'nome', 'telefone', 'email', 'observacao', 'rua', 'numero' ])
+			const body = request.only([ 'nome', 'telefone', 'email', 'observacao', 'rua', 'numero', 'ativo' ])
 
 			const client = new Client()
 
@@ -72,7 +72,7 @@ export default class ClientsController {
 
 			if(search){
 
-				query.whereRaw('(nome ilike ? or email ilike ?)', [ `%${search}%`, `%${search}%` ])
+				query.whereILike('nome', '%' + search + '%')
 
 			}
 
@@ -110,7 +110,7 @@ export default class ClientsController {
 
 		try{
 
-			const body = request.only([ 'nome', 'telefone', 'email', 'observacao', 'rua', 'numero' ])
+			const body = request.only([ 'nome', 'telefone', 'email', 'observacao', 'rua', 'numero', 'ativo' ])
 
 			const client = await Client.query().where('id', params.id).first()
 
@@ -169,7 +169,7 @@ export default class ClientsController {
 	 */
 	public async select({ response } : HttpContextContract){
 
-		const clients = await Client.query().select('id', 'nome').orderBy('nome')
+		const clients = await Client.query().select('id', 'nome').where('ativo', true).orderBy('nome')
 
 		return response.status(200).send({ clients })
 

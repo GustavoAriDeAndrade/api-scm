@@ -74,7 +74,7 @@ export default class UsersController {
 
 			if(search){
 
-				query.whereRaw('(nome ilike ? or email ilike ?)', [ `%${search}%`, `%${search}%` ])
+				query.whereILike('nome', '%' + search + '%')
 
 			}
 
