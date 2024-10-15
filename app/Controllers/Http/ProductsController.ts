@@ -21,7 +21,7 @@ export default class ProductsController {
 
 		try{
 
-			const body = request.only([ 'nome', 'ativo' ])
+			const body = request.only([ 'nome', 'ativo', 'valor' ])
 
 			const product = new Product()
 
@@ -79,7 +79,9 @@ export default class ProductsController {
 
 			if(_embed === 'true'){
 
-				const products = await query
+				let products = await query
+
+				products = await this.formatValue(products)
 
 				return response.status(200).send({ products })
 
@@ -105,7 +107,7 @@ export default class ProductsController {
 
 		try{
 
-			const body = request.only([ 'nome', 'ativo' ])
+			const body = request.only([ 'nome', 'ativo', 'valor' ])
 
 			const product = await Product.query().where('id', params.id).first()
 
@@ -168,5 +170,26 @@ export default class ProductsController {
 
 		return response.status(200).send({ products })
 
+	}
+
+	/**
+	 * Função para formatar o valor dos produtos 
+	 * @param produtos 
+	 * @returns 
+	 */
+	private async formatValue(produtos){
+		// percorremos os produtos
+		for(let i = 0; i < produtos.length; i++){
+			// atribuimos o produto atual
+			const produto = produtos[i]
+			// converte o valor para float mantendo duas casas decimais
+			let valor_formatado = parseFloat(produto.valor).toFixed(2)
+			// converte a vírgula em ponto, caso exista
+			valor_formatado = valor_formatado.toString().replace('.', ',')
+			// atribui o valor ao array
+			produtos[i].valor = valor_formatado
+		}
+		// retorna o array com os valores formatados
+		return produtos
 	}
 }

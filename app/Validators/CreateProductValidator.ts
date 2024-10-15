@@ -27,6 +27,7 @@ export default class CreateProductValidator {
 		nome: schema.string({}, [
 			rules.unique({ table: 'products', column: 'nome', whereNot: { id: this.ctx.params.id ?? null } }),
 		]),
+    valor: schema.number(),
     ativo: schema.boolean(),
   })
 
