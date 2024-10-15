@@ -11,6 +11,9 @@ export default class Product extends BaseModel {
   @column()
   public ativo: boolean
 
+  @column()
+  public valor: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
