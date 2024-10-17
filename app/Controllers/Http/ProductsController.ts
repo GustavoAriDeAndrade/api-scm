@@ -166,7 +166,7 @@ export default class ProductsController {
 	 */
 	public async select({ response } : HttpContextContract){
 
-		const products = await Product.query().select('id', 'nome').where('ativo', true).orderBy('nome')
+		const products = await Product.query().select('id', 'nome', 'valor').where('ativo', true).orderBy('nome')
 
 		return response.status(200).send({ products })
 
