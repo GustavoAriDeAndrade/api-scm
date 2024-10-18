@@ -92,7 +92,9 @@ export default class SalesController {
 
 			if(_embed === 'true'){
 
-				const sales = await query
+				let sales = await query
+
+				sales = await this.formatValue(sales)
 
 				return response.status(200).send({ sales })
 
@@ -265,4 +267,28 @@ export default class SalesController {
             })
         }
     }
+
+	/**
+	 * Função para formatar o valor restante da parcelas 
+	 * @param produtos 
+	 * @returns 
+	 */
+	private async formatValue(vendas){
+		// percorremos as vendas
+		for(let i = 0; i < vendas.length; i++){
+			// atribuimos a venda atual
+			const venda = vendas[i]
+            // caso a venda possua parcelas
+            if(venda.payments[0]){
+                // converte o valor para float mantendo duas casas decimais
+                let valor_formatado = parseFloat(venda.payments[0].valor_restante).toFixed(2)
+                // converte a vírgula em ponto, caso exista
+                valor_formatado = valor_formatado.toString().replace('.', ',')
+                // atribui o valor ao array
+                vendas[i].payments[0].valor_restante = valor_formatado
+            }
+		}
+		// retorna o array com os valores formatados
+		return vendas
+	}
 }
