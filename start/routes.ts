@@ -65,6 +65,8 @@ Route.group(() => {
 		Route.get('', 'SalesController.read').middleware([ 'group:admin,caixa' ])
 		Route.get(':id', 'SalesController.find').middleware([ 'group:admin,caixa' ])
 		Route.put(':id', 'SalesController.update').middleware([ 'group:admin,caixa' ])
+		Route.get('salesClient/:id', 'SalesController.salesClient').middleware([ 'group:admin,caixa' ])
+		Route.put('quitarCompra/:id', 'SalesController.quitarCompra').middleware([ 'group:admin,caixa' ])
 	}).prefix('sale')
 
 	/**
