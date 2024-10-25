@@ -65,11 +65,17 @@ export default class SalesController {
 	 */
 	public async read({ request, response } : HttpContextContract){
 
-		const { page, limit, orderBy, order, search, _embed } = request.all()
+		const { page, limit, orderBy, order, search, _embed, cliente_id, status } = request.all()
 
 		let query = Sale.query()
 
 		if(query != null){
+
+            if(cliente_id){
+
+                query.where('cliente_id', cliente_id)
+
+            }
 
 			if(orderBy){
 
@@ -87,8 +93,27 @@ export default class SalesController {
 
             query.preload('payments', (queryPayment) => {
                 queryPayment.select('venda_id', 'paga', 'valor_restante', 'data_vencimento')
-                    .where('paga', false).orderBy('data_vencimento')
+                    .where('paga', false)
+                    .orderBy('data_vencimento', 'asc');
             })
+
+            if(status){
+
+                query.whereHas('payments', (filter) => {
+                    filter.whereNotExists(
+                        Database.from('sale_payments')
+                            .whereColumn('sales.id', 'venda_id')
+                            .where('paga', false)
+                    )
+                })
+
+            }else{
+
+                query.whereHas('payments', (filter) => {
+                    filter.where('paga', false)
+                })
+
+            }
 
 			if(_embed === 'true'){
 
