@@ -215,6 +215,81 @@ export default class SalesController {
     }
 
     /**
+     * Busca as parcelas pendentes de pagamento de um cliente
+     * @param param0 
+     * @returns 
+     */
+    public async salesClient({ response, params } : HttpContextContract){
+        
+        try{
+
+            const sale = await Sale.query().where('cliente_id', params.id)
+                .preload('client', (queryClient) => {
+                    queryClient.select('id', 'nome')
+                })
+                .preload('payments', (queryPayment) => {
+                    queryPayment.select('venda_id', 'paga', 'valor_restante')
+                })
+                .whereHas('payments', (filter) => {
+                    filter.where('paga', false)
+                })
+
+            if(sale){
+
+                const sales = await this.formatPayments(sale) 
+
+                return response.status(200).send({ sales: sales })
+
+            }else{
+
+                return response.status(200).send({ message: 'Não há pagamentos pendentes' })
+
+            }
+
+        }catch(e){
+
+			console.log(e)
+
+			return response.internalServerError({ message: e.message })
+
+        }
+    }
+
+    /**
+     * Marca uma compra como quitada
+     * @param param0 
+     * @returns 
+     */
+    public async quitarCompra({ response, params } : HttpContextContract){
+
+        try{
+
+            const payment = await SalePayment.query().where('venda_id', params.id).update({
+                valor_restante: 0.00,
+                paga: true,
+                data_pagamento: moment().format('YYYY-MM-DD HH:mm:ss')
+            })
+
+            if(payment){
+
+                return response.status(200).send({ message: 'Compra quitada com sucesso' })
+
+            }else{
+
+                return response.status(204).send({ message: 'Não foi possível quitar a compra' })
+
+            }
+
+        }catch(e){
+
+			console.log(e)
+
+			return response.internalServerError({ message: e.message })
+
+        }
+    }
+
+    /**
      * Salva os produtos da venda
      * @param produtos 
      * @param venda_id 
@@ -293,27 +368,71 @@ export default class SalesController {
         }
     }
 
+    /**
+     * Prepara o array com os pagamentos pendentes do cliente
+     * @param venda 
+     * @returns 
+     */
+    private async formatPayments(venda){
+
+        let retorno : Array<object> = []
+
+        for(let i = 0; i < venda.length; i++){
+
+            const atual = venda[i]
+
+            let valor_restante : any = 0
+
+            let parcelas_restante  = 0
+
+            for(let j = 0; j < atual.payments.length; j++){
+
+                if(atual.payments[j].paga == false){
+
+                    valor_restante = valor_restante + atual.payments[j].valor_restante
+
+                    parcelas_restante++
+
+                }
+            }
+
+            retorno.push({
+                venda_id: atual.id,
+                cliente: atual.client.nome,
+                valor_total: parseFloat(atual.valor_total).toFixed(2),
+                total_parcelas: atual.payments.length,
+                valor_restante: parseFloat(valor_restante).toFixed(2),
+                parcelas_restante: parcelas_restante
+            })
+        }
+
+        return retorno
+
+    }
+
 	/**
 	 * Função para formatar o valor restante da parcelas 
 	 * @param produtos 
 	 * @returns 
 	 */
 	private async formatValue(vendas){
-		// percorremos as vendas
+        
 		for(let i = 0; i < vendas.length; i++){
-			// atribuimos a venda atual
+            
 			const venda = vendas[i]
-            // caso a venda possua parcelas
+            
             if(venda.payments[0]){
-                // converte o valor para float mantendo duas casas decimais
+                
                 let valor_formatado = parseFloat(venda.payments[0].valor_restante).toFixed(2)
-                // converte a vírgula em ponto, caso exista
+                
                 valor_formatado = valor_formatado.toString().replace('.', ',')
-                // atribui o valor ao array
+                
                 vendas[i].payments[0].valor_restante = valor_formatado
+
             }
 		}
-		// retorna o array com os valores formatados
+        
 		return vendas
+
 	}
 }
