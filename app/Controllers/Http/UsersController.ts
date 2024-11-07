@@ -285,6 +285,18 @@ export default class UsersController {
 			return response.status(200).send({ grupos })
 		
 		}
-		
+	}
+
+	/**
+	 * Busca os usuários cadastrados para listar no select
+	 * @param param0 
+	 * @returns 
+	 */
+	public async select({ response } : HttpContextContract){
+
+		const users = await User.query().select('id', 'nome').where('ativo', true).orderBy('nome')
+
+		return response.status(200).send({ users })
+
 	}
 }
