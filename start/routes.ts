@@ -86,6 +86,7 @@ Route.group(() => {
 	 * Selects
 	 */
 	Route.get('selectCliente', 'ClientsController.select').middleware([ 'group:admin,caixa' ])
+	Route.get('selectUsuario', 'UsersController.select').middleware([ 'group:admin,caixa' ])
 	Route.get('selectProduto', 'ProductsController.select').middleware([ 'group:admin,caixa' ])
 	Route.get('selectFormaPagamento', 'SalesController.select').middleware([ 'group:admin,caixa' ])
   
