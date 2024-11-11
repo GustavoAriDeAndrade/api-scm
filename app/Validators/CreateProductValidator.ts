@@ -42,5 +42,7 @@ export default class CreateProductValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'nome.unique': 'Nome vinculado a outro produto'
+  }
 }

@@ -50,5 +50,7 @@ export default class CreateUserValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'email.unique': 'Email vinculado a outro usuário'
+  }
 }
