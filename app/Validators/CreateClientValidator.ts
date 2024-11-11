@@ -1,4 +1,4 @@
-import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class CreateClientValidator {
@@ -24,7 +24,9 @@ export default class CreateClientValidator {
    *    ```
    */
   public schema = schema.create({
-		nome: schema.string(),
+		nome: schema.string({}, [
+			rules.unique({ table: 'clients', column: 'nome', whereNot: { id: this.ctx.params.id ?? null } }),
+		]),
 		telefone: schema.string(),
 		email: schema.string.optional(),
 		observacao: schema.string.optional(),
@@ -43,5 +45,7 @@ export default class CreateClientValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'nome.unique': 'Nome vinculado a outro cliente'
+  }
 }

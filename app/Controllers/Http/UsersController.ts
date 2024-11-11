@@ -116,7 +116,7 @@ export default class UsersController {
 
 		try{
 
-			const body = request.only([ 'nome', 'email', 'password', 'ativo' ])
+			const body = request.only([ 'nome', 'email', 'ativo' ])
 
 			const grupo_id = request.input('grupo')
 
@@ -128,7 +128,7 @@ export default class UsersController {
 
 			if(user){
 
-				if(password){
+				if(password != null){
 	
 					user.password = password
 	

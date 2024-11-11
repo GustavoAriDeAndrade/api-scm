@@ -399,9 +399,9 @@ export default class SalesController {
             retorno.push({
                 venda_id: atual.id,
                 cliente: atual.client.nome,
-                valor_total: parseFloat(atual.valor_total).toFixed(2),
+                valor_total: parseFloat(atual.valor_total).toFixed(2).toString().replace('.', ','),
                 total_parcelas: atual.payments.length,
-                valor_restante: parseFloat(valor_restante).toFixed(2),
+                valor_restante: parseFloat(valor_restante).toFixed(2).toString().replace('.', ','),
                 parcelas_restante: parcelas_restante
             })
         }
